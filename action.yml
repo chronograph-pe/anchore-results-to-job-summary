@@ -23,5 +23,5 @@ runs:
        echo "SEVERITY_THRESHOLD=${{ inputs.severity_threshold }}" >> $GITHUB_ENV
       shell: bash
     - name: Create job summary
-      run: python main.py
+      run: python src/main.py
       shell: bash
