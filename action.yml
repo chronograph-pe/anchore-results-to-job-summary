@@ -1,0 +1,27 @@
+# action.yaml
+name: 'Anchor Results To Job Summary'
+description: 'A GitHub Action that converts Anchor container scan results to a github job summary'
+inputs:
+  results_file:
+    description: 'The Anchor results file name and path'
+    required: true
+    default: "results.json"
+  severity_threshold:
+    description: 'The severitiy threshold you want to include in your report'
+    required: true
+    default: "medium"
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'  
+    - name: Pass Inputs to Shell
+      run: |
+       echo "RESULTS_FILE=${{ inputs.results_file }}" >> $GITHUB_ENV
+       echo "SEVERITY_THRESHOLD=${{ inputs.severity_threshold }}" >> $GITHUB_ENV
+      shell: bash
+    - name: Create job summary
+      run: python main.py
+      shell: bash
