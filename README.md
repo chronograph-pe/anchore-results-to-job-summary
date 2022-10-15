@@ -51,7 +51,7 @@ jobs:
 
       - name: Create Job Description
         id: createjd
-        uses: rob-sitro/anchor-results-to-job-summary@main
+        uses: chronograph-pe/anchore-results-to-job-summary@main
         with:
           results_file: ${{ steps.scan.outputs.json }}
           severity_threshold: critical
