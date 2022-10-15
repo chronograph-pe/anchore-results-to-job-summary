@@ -1,10 +1,10 @@
 import json
 import os
-import action_summary
+import re
 
 
-results_file = os.getenv("RESULTS_FILE", "results.json")
-severity_threshold = os.getenv("SEVERITY_THRESHOLD", "medium")
+results_file = os.getenv("results_file", "results.json")
+severity_threshold = os.getenv("severity_threshold", "critical")
 
 def main():
     r = []
@@ -45,7 +45,7 @@ def main():
                 "fixed_versions": fixed_versions
             })
 
-    action_summary.create(r)
+    create(r)
 
 
 def generate_thresholdes(severity_threshold):
@@ -64,6 +64,33 @@ def generate_thresholdes(severity_threshold):
 
     return valid_severities
 
+
+def create(results):
+        
+    with open ("job_summary.md", "w") as f:
+        f.write("# Container Scan Job Summary \n")
+        f.write(" --- \n")
+        f.write("### Vulnerabilities\n")
+        f.write("")
+        f.write("")
+        if not results:
+            f.write("#### No vulnerabilities found\n\n")
+        else:
+            f.write("| Severity | CVE ID | Name | Installed Version | Fixed State | Fixed Version | Description\n")
+            f.write("| ------ | ------ | ------ | ------ | ------ | ------ | ------ | \n")
+            for result in results:
+                f.write("| {} | {} | {} | {} | {} | {} | {} |\n".format(
+                    result["severity"], result["cve_id"], result["name"], result["installed"],
+                    result["fixed_state"], result["fixed_versions"], result["description"]
+                ))
+
+    with open("job_summary.md", "r")  as fr:
+        summary =  fr.read()
+
+    with open(os.getenv('GITHUB_STEP_SUMMARY'), "a") as fr:
+        fr.write(summary)
+
+    print("Job summary report created {}".format(os.path.abspath("job_summary.md")))
 
 
 if __name__ == "__main__":
